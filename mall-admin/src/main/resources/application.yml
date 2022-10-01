@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/mall?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
-    password: root
+    password: 123456
     druid:
       initial-size: 5 #连接池初始化大小
       min-idle: 10 #最小空闲连接数
@@ -18,13 +18,13 @@ spring:
         login-username: druid
         login-password: druid
   redis:
-    host: localhost # Redis服务器地址
+    host: 192.168.86.101 # Redis服务器地址
     database: 0 # Redis数据库索引（默认为0）
     port: 6379 # Redis服务器连接端口
     password:  # Redis服务器连接密码（默认为空）
     timeout: 3000ms # 连接超时时间（毫秒）
   rabbitmq: #rabbitmq相关配置
-    host: localhost
+    host: 192.168.86.101
     port: 5672
     username: guest
     password: guest
@@ -45,9 +45,9 @@ management: #开启SpringBoot Admin的监控
     health:
       show-details: always
 redis:
-  database: mall
-  key:
-    admin: 'ums:admin'
+#  database: mall
+#  key:
+#    admin: 'ums:admin'
   expire:
     common: 86400 # 24小时
 aliyun:
@@ -63,10 +63,10 @@ aliyun:
     dir:
       prefix: mall/images/ # 上传文件夹路径前缀
 minio:
-  endpoint: http://locahost:9000 #MinIO服务所在地址
+  endpoint: http://192.168.86.101:9000 #MinIO服务所在地址
   bucketName: mall #存储桶名称
-  accessKey: minioadmin #访问的key
-  secretKey: minioadmin #访问的秘钥
+  accessKey: admin #访问的key
+  secretKey: admin123456 #访问的秘钥
 feign:
   okhttp:
     enabled: true

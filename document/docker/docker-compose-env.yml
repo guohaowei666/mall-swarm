@@ -7,6 +7,9 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root #设置root帐号密码
+      MYSQL_DATABASE: nacos_config
+      MYSQL_USER: nacos  #这个账号密码下面nacos没用上，可能mysql不是第一次启动的缘故
+      MYSQL_PASSWORD: nacos
     ports:
       - 3306:3306
     volumes:
@@ -25,17 +28,27 @@ services:
     image: nginx:1.22
     container_name: nginx
     volumes:
-      - /mydata/nginx/conf:/etc/nginx #配置文件挂载
+      - /mydata/nginx/conf:/etc/nginx #配置文件挂载 第一次需要将配置文件copy到宿主机上，否则nginx会因找不到配置文件而启动失败
       - /mydata/nginx/html:/usr/share/nginx/html #静态资源根目录挂载
       - /mydata/nginx/log:/var/log/nginx #日志文件挂载
     ports:
       - 80:80
+      - 8000:8000 #nginx要代理哪些端口都得配置出来啊，否则只是在容器内部，宿主机是访问不到的，这么简单的问题卡了我好久
+    depends_on:
+      - nacos1
+      - nacos2
+      - nacos3
   rabbitmq:
     image: rabbitmq:3.9-management
     container_name: rabbitmq
     volumes:
       - /mydata/rabbitmq/data:/var/lib/rabbitmq #数据文件挂载
       - /mydata/rabbitmq/log:/var/log/rabbitmq #日志文件挂载
+      #- /mydata/rabbitmq/plugins:/plugins #插件挂载 加上这个目录rabbitmq启动会失败
+    #environment:
+      #RABBITMQ_DEFAULT_VHOST: '/'
+      #RABBITMQ_DEFAULT_USER: admin
+      #RABBITMQ_DEFAULT_PASS: admin
     ports:
       - 5672:5672
       - 15672:15672
@@ -72,7 +85,7 @@ services:
   kibana:
     image: kibana:7.17.3
     container_name: kibana
-    links:
+    links: #同一个compose文件管理的服务可以直接用服务名访问，如果要给服务取别名则可以用links实现，如下面的es就是elasticsearch服务的别名
       - elasticsearch:es #可以用es这个域名访问elasticsearch服务
     depends_on:
       - elasticsearch #kibana在elasticsearch启动之后再启动
@@ -85,12 +98,156 @@ services:
     container_name: mongo
     volumes:
       - /mydata/mongo/db:/data/db #数据文件挂载
+      - /mydata/mongo/log:/data/log #日志文件挂载
     ports:
       - 27017:27017
-  nacos-registry:
-    image: nacos/nacos-server:v2.1.0
-    container_name: nacos-registry
     environment:
-      - "MODE=standalone"
+      MONGO_INITDB_ROOT_USERNAME: root #初始用户名
+      MONGO_INITDB_ROOT_PASSWORD: root #初始密码
+    command: mongod --auth #开启鉴权
+  nacos1:
+    hostname: nacos1
+    image: nacos/nacos-server:v2.1.0
+    container_name: nacos1
+    environment:
+      - "MODE=cluster" #standalone or cluster
+      - "PREFER_HOST_MODE=hostname" # hostname or ip        如果指定为 ip，那么 NACOS_SERVERS 也必须指定的是一组 ip（所有Nacos的集群节点），注意这里比较坑的是，它默认会取Docker的 ip（docker0：172.17.0.1/16），这样会导致 ip 地址不固定，更者如果是多台服务器就压根不会在同一个网络中，所以还需要配置 NACOS_SERVER_IP 内网地址用来显示指定 ip；② 如果指定为 hostname，那么 NACOS_SERVERS 也必须指定的是一组 hostname（所有Nacos的集群节点），所以还需要配置docker-compose中service的 hostname 用来显示指定主机名
+      - "NACOS_SERVERS=nacos1:8848 nacos2:8848 nacos3:8848"
+      #- "SPRING_DATASOURCE_PLATFORM=mysql" #单机模式下支持MYSQL数据库
+      - "MYSQL_SERVICE_HOST=mysql"
+      - "MYSQL_SERVICE_PORT=3306"
+      - "MYSQL_SERVICE_USER=root"
+      - "MYSQL_SERVICE_PASSWORD=root"
+      - "MYSQL_SERVICE_DB_NAME=nacos_config"
+      - "NACOS_AUTH_ENABLE=true"
+      - "JVM_XMN=256m"
+      - "JVM_XMS=512m"
+      - "JVM_XMX=512m"
+    volumes:
+      - /mydata/nacos/nacos1/logs:/home/nacos/logs #日志文件挂载
+      - /mydata/nacos/nacos1/conf:/home/nacos/conf #配置文件挂载
+      - /mydata/nacos/nacos1/init.d/custom.properties:/home/nacos/init.d/custom.properties #官方配置文件配置的
     ports:
-      - 8848:8848
+      - "8848:8848"
+      - "9848:9848"
+      - "9555:9555"  #这个端口是干嘛的？
+    depends_on:
+      - mysql
+  nacos2:
+    hostname: nacos2
+    image: nacos/nacos-server:v2.1.0
+    container_name: nacos2
+    environment:
+      - "MODE=cluster" #standalone or cluster
+      - "PREFER_HOST_MODE=hostname" # hostname or ip        如果指定为 ip，那么 NACOS_SERVERS 也必须指定的是一组 ip（所有Nacos的集群节点），注意这里比较坑的是，它默认会取Docker的 ip（docker0：172.17.0.1/16），这样会导致 ip 地址不固定，更者如果是多台服务器就压根不会在同一个网络中，所以还需要配置 NACOS_SERVER_IP 内网地址用来显示指定 ip；② 如果指定为 hostname，那么 NACOS_SERVERS 也必须指定的是一组 hostname（所有Nacos的集群节点），所以还需要配置docker-compose中service的 hostname 用来显示指定主机名
+      - "NACOS_SERVERS=nacos1:8848 nacos2:8848 nacos3:8848" #此处我不太理解为什么不是nacos2:8849和nacos3:8850
+      #- "SPRING_DATASOURCE_PLATFORM=mysql" #单机模式下支持MYSQL数据库
+      - "MYSQL_SERVICE_HOST=mysql"
+      - "MYSQL_SERVICE_PORT=3306"
+      - "MYSQL_SERVICE_USER=root"
+      - "MYSQL_SERVICE_PASSWORD=root"
+      - "MYSQL_SERVICE_DB_NAME=nacos_config"
+      - "NACOS_AUTH_ENABLE=true"
+      - "JVM_XMN=256m"
+      - "JVM_XMS=512m"
+      - "JVM_XMX=512m"
+    volumes:
+      - /mydata/nacos/nacos2/logs:/home/nacos/logs #日志文件挂载
+      - /mydata/nacos/nacos2/conf:/home/nacos/conf #配置文件挂载
+      - /mydata/nacos/nacos2/init.d/custom.properties:/home/nacos/init.d/custom.properties #官方配置文件配置的
+    ports:
+      - "8849:8848"
+      - "9849:9848"
+    depends_on:
+      - mysql
+  nacos3:
+    hostname: nacos3
+    image: nacos/nacos-server:v2.1.0
+    container_name: nacos3
+    environment:
+      - "MODE=cluster" #standalone or cluster
+      - "PREFER_HOST_MODE=hostname" # hostname or ip        如果指定为 ip，那么 NACOS_SERVERS 也必须指定的是一组 ip（所有Nacos的集群节点），注意这里比较坑的是，它默认会取Docker的 ip（docker0：172.17.0.1/16），这样会导致 ip 地址不固定，更者如果是多台服务器就压根不会在同一个网络中，所以还需要配置 NACOS_SERVER_IP 内网地址用来显示指定 ip；② 如果指定为 hostname，那么 NACOS_SERVERS 也必须指定的是一组 hostname（所有Nacos的集群节点），所以还需要配置docker-compose中service的 hostname 用来显示指定主机名
+      - "NACOS_SERVERS=nacos1:8848 nacos2:8848 nacos3:8848"
+      #- "SPRING_DATASOURCE_PLATFORM=mysql" #单机模式下支持MYSQL数据库
+      - "MYSQL_SERVICE_HOST=mysql"
+      - "MYSQL_SERVICE_PORT=3306"
+      - "MYSQL_SERVICE_USER=root"
+      - "MYSQL_SERVICE_PASSWORD=root"
+      - "MYSQL_SERVICE_DB_NAME=nacos_config"
+      - "NACOS_AUTH_ENABLE=true"
+      - "JVM_XMN=256m"
+      - "JVM_XMS=512m"
+      - "JVM_XMX=512m"
+    volumes:
+      - /mydata/nacos/nacos3/logs:/home/nacos/logs #日志文件挂载
+      - /mydata/nacos/nacos3/conf:/home/nacos/conf #配置文件挂载
+      - /mydata/nacos/nacos3/init.d/custom.properties:/home/nacos/init.d/custom.properties #官方配置文件配置的
+    ports:
+      - "8850:8848"
+      - "9850:9848"
+    depends_on:
+      - mysql
+  minio:
+    image: minio/minio:RELEASE.2022-09-22T18-57-27Z.fips
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123456
+    command:  server /data --console-address ":9001"
+    volumes:
+      - /mydata/minio/data:/data
+      - /mydata/minio/config:/root/.minio
+    ports:
+      - 9000:9000
+      - 9001:9001
+  zookeeper:
+    image: zookeeper:3.8.0
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+    volumes:
+      - /mydata/zookeeper/data:/data
+      - /mydata/zookeeper/conf:/conf
+  rocketmq:
+    image: rocketmqinc/rocketmq
+    container_name: rocketmq
+    restart: always
+    ports:
+      - 9876:9876
+    environment:
+      JAVA_OPT_EXT: -server -Xms256m -Xmx256m
+    volumes:
+      - /mydata/rocketmq/logs:/home/rocketmq/logs
+      - /mydata/rocketmq/store:/home/rocketmq/store
+    command: sh mqnamesrv
+  broker:
+    image: rocketmqinc/rocketmq
+    container_name: rmqbroker
+    restart: always
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    volumes:
+      - /mydata/rocketmq/logs:/home/rocketmq/logs
+      - /mydata/rocketmq/store:/home/rocketmq/store
+      - /mydata/rocketmq/conf/broker.conf:/opt/rocketmq-4.4.0/conf/broker.conf  #这个配置需要先在宿主机对应目录放好broker.conf配置文件,文件内容参考下面文档
+    command: sh mqbroker -n namesrv:9876 -c ../conf/broker.conf
+    depends_on:
+      - rocketmq
+    environment:
+      #- JAVA_HOME=/usr/lib/jvm/jre
+      JAVA_OPT_EXT: -server -Xms256m -Xmx256m -Xmn256m
+  console:
+    image: styletang/rocketmq-console-ng
+    container_name: rocketmq-console-ng
+    restart: always
+    ports:
+      - 8076:8080
+    volumes:
+      - /mydata/rocketmq/console/logs:/root/logs
+    depends_on:
+      - rocketmq
+    environment:
+      - JAVA_OPTS= -Dlogging.level.root=info -Drocketmq.namesrv.addr=rocketmq:9876
+      - Dcom.rocketmq.sendMessageWithVIPChannel=false

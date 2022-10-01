@@ -2,7 +2,25 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: http://localhost:8848
+        server-addr: 192.168.86.101:8848,192.168.86.101:8849,192.168.86.101:8850
+        username: nacos
+        password: nacos
       config:
-        server-addr: http://localhost:8848
+        server-addr: 192.168.86.101:8848,192.168.86.101:8849,192.168.86.101:8850
         file-extension: yaml
+        username: nacos
+        password: nacos
+logging:
+  level:
+    root: info
+mongo:
+  rs: 192.168.86.101:27017,192.168.86.101:27017
+  username: mall-portal
+  password: mall-portal
+  dbname: mall-portal
+  maxSize: 8
+  minSize: 3
+  maxWaitTime: 1500
+  clusterConnectionMode: 0 #0:SINGLE;1:MULTIPLE
+  requiredClusterType: 0 #0:STANDALONE;1:REPLICA_SET
+  credentialType: 2

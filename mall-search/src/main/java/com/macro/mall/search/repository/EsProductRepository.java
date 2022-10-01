@@ -13,6 +13,8 @@ public interface EsProductRepository extends ElasticsearchRepository<EsProduct, 
     /**
      * 搜索查询
      *
+     * 在接口中直接指定查询方法名称便可查询，无需进行实现，如商品表中有商品名称、标题和关键字，直接定义以下查询，就可以对这三个字段进行【全文搜索】
+     *
      * @param name              商品名称
      * @param subTitle          商品标题
      * @param keywords          商品关键字

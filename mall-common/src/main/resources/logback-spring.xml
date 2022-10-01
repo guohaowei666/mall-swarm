@@ -7,7 +7,7 @@
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
     <!--应用名称-->
     <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="springBoot"/>
-    <!--日志文件保存路径-->
+    <!--日志文件保存路径--><!--操作系统缓存的临时目录 C:\Users\Administrator\AppData\Local\Temp\logs    linux:/tmp-->
     <property name="LOG_FILE_PATH" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/logs}"/>
     <!--LogStash访问host-->
     <springProperty name="LOG_STASH_HOST" scope="context" source="logstash.host" defaultValue="localhost"/>

@@ -16,11 +16,18 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class CancelOrderSender {
-    private static Logger LOGGER =LoggerFactory.getLogger(CancelOrderSender.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(CancelOrderSender.class);
     @Autowired
     private AmqpTemplate amqpTemplate;
 
-    public void sendMessage(Long orderId,final long delayTimes){
+    /**
+     * mall.order.direct.ttl（订单延迟消息队列所绑定的交换机）:绑定的队列为mall.order.cancel.ttl，
+     * 一旦有消息以mall.order.cancel.ttl为路由键发送过来，会转发到此队列，并在此队列保存一定时间，等到超时后会自动将消息发送到mall.order.cancel（取消订单消息消费队列）。
+     *
+     * @param orderId
+     * @param delayTimes
+     */
+    public void sendMessage(Long orderId, final long delayTimes) {
         //给延迟队列发送消息
         amqpTemplate.convertAndSend(QueueEnum.QUEUE_TTL_ORDER_CANCEL.getExchange(), QueueEnum.QUEUE_TTL_ORDER_CANCEL.getRouteKey(), orderId, new MessagePostProcessor() {
             @Override
@@ -30,6 +37,6 @@ public class CancelOrderSender {
                 return message;
             }
         });
-        LOGGER.info("send orderId:{}",orderId);
+        LOGGER.info("send orderId:{}", orderId);
     }
 }

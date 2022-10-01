@@ -17,6 +17,14 @@
     <dependencies>
         <dependency>
             <groupId>com.macro.mall</groupId>
+            <artifactId>common-redis</artifactId>
+        </dependency>
+<!--        <dependency>
+            <groupId>com.macro.mall</groupId>
+            <artifactId>common-util</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>com.macro.mall</groupId>
             <artifactId>mall-common</artifactId>
             <exclusions>
                 <exclusion>

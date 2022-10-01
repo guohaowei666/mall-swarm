@@ -1,11 +1,9 @@
 package com.macro.mall.portal.repository;
 
-import com.macro.mall.portal.domain.MemberReadHistory;
+import com.macro.mall.portal.domain.member_read_history.MemberReadHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
-
-import java.util.List;
 
 /**
  * 会员商品浏览历史Repository

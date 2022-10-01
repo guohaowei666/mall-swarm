@@ -18,10 +18,10 @@ public class SwaggerConfig extends BaseSwaggerConfig {
     @Override
     public SwaggerProperties swaggerProperties() {
         return SwaggerProperties.builder()
-                .apiBasePackage("com.macro.mall.demo.controller")
+                .apiBasePackage("com.macro.mall.demo")
                 .title("mall-demo系统")
-                .description("SpringCloud版本中的一些示例")
-                .contactName("macro")
+                .description("各种demo")
+                .contactName("郭浩伟")
                 .version("1.0")
                 .enableSecurity(true)
                 .build();

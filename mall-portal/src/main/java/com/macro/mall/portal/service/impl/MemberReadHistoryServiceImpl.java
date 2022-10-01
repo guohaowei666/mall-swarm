@@ -1,18 +1,20 @@
 package com.macro.mall.portal.service.impl;
 
 import com.macro.mall.model.UmsMember;
-import com.macro.mall.portal.domain.MemberReadHistory;
+import com.macro.mall.portal.domain.member_read_history.MemberReadHistory;
+import com.macro.mall.portal.domain.member_read_history.MemberReadHistoryCreateReq;
 import com.macro.mall.portal.repository.MemberReadHistoryRepository;
 import com.macro.mall.portal.service.MemberReadHistoryService;
 import com.macro.mall.portal.service.UmsMemberService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,15 +28,16 @@ public class MemberReadHistoryServiceImpl implements MemberReadHistoryService {
     @Autowired
     private UmsMemberService memberService;
     @Override
-    public int create(MemberReadHistory memberReadHistory) {
+    public String create(MemberReadHistoryCreateReq req) {
         UmsMember member = memberService.getCurrentMember();
+        MemberReadHistory memberReadHistory = new MemberReadHistory();
+        BeanUtils.copyProperties(req,memberReadHistory);
         memberReadHistory.setMemberId(member.getId());
         memberReadHistory.setMemberNickname(member.getNickname());
         memberReadHistory.setMemberIcon(member.getIcon());
-        memberReadHistory.setId(null);
-        memberReadHistory.setCreateTime(new Date());
-        memberReadHistoryRepository.save(memberReadHistory);
-        return 1;
+        memberReadHistory.setCreateTime(LocalDateTime.now());
+        MemberReadHistory savedObject = memberReadHistoryRepository.save(memberReadHistory);
+        return savedObject.getId();
     }
 
     @Override

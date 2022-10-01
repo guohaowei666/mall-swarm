@@ -3,14 +3,17 @@ package com.macro.mall.auth.controller;
 import com.macro.mall.auth.domain.Oauth2TokenDto;
 import com.macro.mall.common.api.CommonResult;
 import com.macro.mall.common.constant.AuthConstant;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.endpoint.TokenEndpoint;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -21,7 +24,7 @@ import java.util.Map;
  * Created by macro on 2020/7/17.
  */
 @RestController
-@Api(tags = "AuthController", description = "认证中心登录认证")
+@Tag(name = "AuthController", description = "认证中心登录认证")
 @RequestMapping("/oauth")
 public class AuthController {
 
@@ -37,7 +40,7 @@ public class AuthController {
                                                         @ApiParam("刷新token") @RequestParam(required = false) String refresh_token,
                                                         @ApiParam("登录用户名") @RequestParam(required = false) String username,
                                                         @ApiParam("登录密码") @RequestParam(required = false) String password) throws HttpRequestMethodNotSupportedException {
-        Map<String, String> parameters = new HashMap<>();
+        Map<String, String> parameters = new HashMap<>(6);
         parameters.put("grant_type",grant_type);
         parameters.put("client_id",client_id);
         parameters.put("client_secret",client_secret);

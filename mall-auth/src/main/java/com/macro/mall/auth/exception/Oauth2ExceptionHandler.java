@@ -12,6 +12,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @ControllerAdvice
 public class Oauth2ExceptionHandler {
+    /**
+     * @ControllerAdvice 配合 @ExceptionHandler 实现全局异常处理
+     *
+     * @param e
+     * @return
+     */
     @ResponseBody
     @ExceptionHandler(value = OAuth2Exception.class)
     public CommonResult handleOauth2(OAuth2Exception e) {

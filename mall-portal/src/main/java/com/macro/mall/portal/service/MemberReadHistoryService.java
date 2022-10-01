@@ -1,6 +1,7 @@
 package com.macro.mall.portal.service;
 
-import com.macro.mall.portal.domain.MemberReadHistory;
+import com.macro.mall.portal.domain.member_read_history.MemberReadHistory;
+import com.macro.mall.portal.domain.member_read_history.MemberReadHistoryCreateReq;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface MemberReadHistoryService {
     /**
      * 生成浏览记录
      */
-    int create(MemberReadHistory memberReadHistory);
+    String create(MemberReadHistoryCreateReq req);
 
     /**
      * 批量删除浏览记录

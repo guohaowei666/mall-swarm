@@ -60,7 +60,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         UmsAdminExample example = new UmsAdminExample();
         example.createCriteria().andUsernameEqualTo(username);
         List<UmsAdmin> adminList = adminMapper.selectByExample(example);
-        if (adminList != null && adminList.size() > 0) {
+        if (!CollectionUtils.isEmpty(adminList)) {
             return adminList.get(0);
         }
         return null;
@@ -91,7 +91,7 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         if(StrUtil.isEmpty(username)||StrUtil.isEmpty(password)){
             Asserts.fail("用户名或密码不能为空！");
         }
-        Map<String, String> params = new HashMap<>();
+        Map<String, String> params = new HashMap<>(5);
         params.put("client_id", AuthConstant.ADMIN_CLIENT_ID);
         params.put("client_secret","123456");
         params.put("grant_type","password");
@@ -255,17 +255,21 @@ public class UmsAdminServiceImpl implements UmsAdminService {
         }
         UserDto userDto = JSONUtil.toBean(userStr, UserDto.class);
         UmsAdmin admin = getCacheService().getAdmin(userDto.getId());
-        if(admin!=null){
-            return admin;
-        }else{
+        if (admin == null) {
             admin = adminMapper.selectByPrimaryKey(userDto.getId());
             getCacheService().setAdmin(admin);
-            return admin;
         }
+        return admin;
     }
 
     @Override
     public UmsAdminCacheService getCacheService() {
         return SpringUtil.getBean(UmsAdminCacheService.class);
     }
+    public static void main(String[] args) {
+        String admin = BCrypt.hashpw("admin");
+        System.out.println(admin);
+    }
 }
+
+

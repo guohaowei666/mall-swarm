@@ -15,7 +15,7 @@ import java.util.List;
  * Created by macro on 2018/6/19.
  */
 @Document(indexName = "pms")
-@Setting(shards = 1,replicas = 0)
+@Setting(shards = 3,replicas = 1)
 public class EsProduct implements Serializable {
     private static final long serialVersionUID = -1L;
     @Id
@@ -28,6 +28,7 @@ public class EsProduct implements Serializable {
     private Long productCategoryId;
     @Field(type = FieldType.Keyword)
     private String productCategoryName;
+    @Field(type = FieldType.Keyword)
     private String pic;
     @Field(analyzer = "ik_max_word",type = FieldType.Text)
     private String name;

@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @EnableFeignClients
 @EnableDiscoveryClient
-@SpringBootApplication(scanBasePackages = "com.macro.mall")
+@SpringBootApplication(scanBasePackages = {"com.macro.mall","conf"})
 public class MallPortalApplication {
 
     public static void main(String[] args) {

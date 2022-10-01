@@ -40,7 +40,10 @@ public class SecurityUser implements UserDetails {
      * 权限数据
      */
     private Collection<SimpleGrantedAuthority> authorities;
-
+    /**
+     * 用户登录的ip
+     */
+    private String ip;
     public SecurityUser() {
 
     }
@@ -55,6 +58,7 @@ public class SecurityUser implements UserDetails {
             authorities = new ArrayList<>();
             userDto.getRoles().forEach(item -> authorities.add(new SimpleGrantedAuthority(item)));
         }
+        this.ip = userDto.getIp();
     }
 
     @Override

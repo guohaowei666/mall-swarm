@@ -16,10 +16,9 @@ import com.macro.mall.model.UmsMember;
 import com.macro.mall.model.UmsMemberExample;
 import com.macro.mall.model.UmsMemberLevel;
 import com.macro.mall.model.UmsMemberLevelExample;
-import com.macro.mall.portal.service.AuthService;
+import com.macro.mall.portal.feign.AuthService;
 import com.macro.mall.portal.service.UmsMemberCacheService;
 import com.macro.mall.portal.service.UmsMemberService;
-import org.apache.catalina.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * 会员管理Service实现类
@@ -52,6 +55,8 @@ public class UmsMemberServiceImpl implements UmsMemberService {
     private AuthService authService;
     @Autowired
     private HttpServletRequest request;
+
+    private static final String PORTAL_MEMBER = "前台会员";
 
     @Override
     public UmsMember getByUsername(String username) {
@@ -162,7 +167,7 @@ public class UmsMemberServiceImpl implements UmsMemberService {
         if(member!=null){
             UserDto userDto = new UserDto();
             BeanUtil.copyProperties(member,userDto);
-            userDto.setRoles(CollUtil.toList("前台会员"));
+            userDto.setRoles(CollUtil.toList(PORTAL_MEMBER));
             return userDto;
         }
         return null;

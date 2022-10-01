@@ -18,9 +18,13 @@ public class GlobalCorsConfig {
     @Bean
     public CorsWebFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
+        //设置请求方法 * 表示任意
         config.addAllowedMethod("*");
+        //设置允许访问的网络
         config.addAllowedOriginPattern("*");
+        //所有请求头信息 * 表示任意
         config.addAllowedHeader("*");
+        //设置是否从服务器获取cookie
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource(new PathPatternParser());
         source.registerCorsConfiguration("/**", config);

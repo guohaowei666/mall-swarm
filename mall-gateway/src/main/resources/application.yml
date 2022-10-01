@@ -16,7 +16,7 @@ spring:
           predicates:
             - Path=/mall-auth/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=1 # stripPrefix去除第一个前缀；prefixPath是添加前缀
         - id: mall-admin
           uri: lb://mall-admin
           predicates:
@@ -49,7 +49,7 @@ spring:
   redis:
     database: 0
     port: 6379
-    host: localhost
+    host: 192.168.86.101
     password:
 secure:
   ignore:
@@ -64,6 +64,7 @@ secure:
       - "/*/*.ico"
       - "/webjars/**"
       - "/actuator/**"
+      - "/mall-demo/**"
       - "/mall-auth/oauth/token"
       - "/mall-auth/rsa/publicKey"
       - "/mall-search/**"

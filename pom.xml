@@ -19,6 +19,7 @@
         <module>mall-monitor</module>
         <module>mall-gateway</module>
         <module>mall-auth</module>
+        <module>common</module>
     </modules>
 
     <parent>
@@ -56,6 +57,7 @@
         <nimbus-jose-jwt.version>9.23</nimbus-jose-jwt.version>
         <mall-common.version>1.0-SNAPSHOT</mall-common.version>
         <mall-mbg.version>1.0-SNAPSHOT</mall-mbg.version>
+        <fastjson.version>1.2.83</fastjson.version>
     </properties>
 
     <dependencies>
@@ -104,6 +106,26 @@
                 <version>${spring-cloud-alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.macro.mall</groupId>
+                <artifactId>common-rabbitmq</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.macro.mall</groupId>
+                <artifactId>common-util</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.macro.mall</groupId>
+                <artifactId>common-mongodb</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.macro.mall</groupId>
+                <artifactId>common-redis</artifactId>
+                <version>1.0-SNAPSHOT</version>
             </dependency>
             <!--mall通用模块-->
             <dependency>
@@ -212,6 +234,11 @@
                 <artifactId>minio</artifactId>
                 <version>${minio.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -229,13 +256,13 @@
                     <version>${docker.maven.plugin.version}</version>
                     <executions>
                         <!--如果想在项目打包时构建镜像添加-->
-                        <execution>
+<!--                        <execution>
                             <id>build-image</id>
                             <phase>package</phase>
                             <goals>
                                 <goal>build</goal>
                             </goals>
-                        </execution>
+                        </execution>-->
                     </executions>
                     <configuration>
                         <!-- Docker 远程管理地址-->

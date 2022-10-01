@@ -2,19 +2,27 @@ package com.macro.mall.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageHelper;
-import com.macro.mall.common.constant.AuthConstant;
-import com.macro.mall.common.service.RedisService;
 import com.macro.mall.mapper.UmsResourceMapper;
 import com.macro.mall.mapper.UmsRoleMapper;
 import com.macro.mall.mapper.UmsRoleResourceRelationMapper;
-import com.macro.mall.model.*;
-import com.macro.mall.service.UmsAdminCacheService;
+import com.macro.mall.model.UmsResource;
+import com.macro.mall.model.UmsResourceExample;
+import com.macro.mall.model.UmsRole;
+import com.macro.mall.model.UmsRoleExample;
+import com.macro.mall.model.UmsRoleResourceRelation;
+import com.macro.mall.model.UmsRoleResourceRelationExample;
 import com.macro.mall.service.UmsResourceService;
+import conf.constant.RedisConst;
+import conf.service.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -94,8 +102,8 @@ public class UmsResourceServiceImpl implements UmsResourceService {
             List<String> roleNames = roleList.stream().filter(item -> roleIds.contains(item.getId())).map(item -> item.getId() + "_" + item.getName()).collect(Collectors.toList());
             resourceRoleMap.put("/"+applicationName+resource.getUrl(),roleNames);
         }
-        redisService.del(AuthConstant.RESOURCE_ROLES_MAP_KEY);
-        redisService.hSetAll(AuthConstant.RESOURCE_ROLES_MAP_KEY, resourceRoleMap);
+        redisService.del(RedisConst.RESOURCE_ROLES_MAP_KEY);
+        redisService.hSetAll(RedisConst.RESOURCE_ROLES_MAP_KEY, resourceRoleMap);
         return resourceRoleMap;
 
     }

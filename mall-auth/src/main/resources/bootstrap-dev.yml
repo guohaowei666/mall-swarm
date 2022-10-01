@@ -2,10 +2,34 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: http://localhost:8848
+        server-addr: 192.168.86.101:8848,192.168.86.101:8849,192.168.86.101:8850
+        username: nacos
+        password: nacos
+        namespace: mall
       config:
-        server-addr: http://localhost:8848
-        file-extension: yaml
+        server-addr: 192.168.86.101:8848,192.168.86.101:8849,192.168.86.101:8850
+        file-extension: yml
+        username: nacos
+        password: nacos
+        namespace: mall
+  datasource:
+    url: jdbc:mysql://localhost:3306/mall?serverTimezone=UTC&useSSL=false&useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: 123456
+    druid:
+      initial-size: 5 #连接池初始化大小
+      min-idle: 10 #最小空闲连接数
+      max-active: 20 #最大连接数
+      web-stat-filter:
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*" #不统计这些请求数据
+      stat-view-servlet: #访问监控网页的登录用户名和密码
+        login-username: druid
+        login-password: druid
 logging:
   level:
-    root: debug
+    root: info
+jwt:
+  keyPairName: jwt.jks
+  keyPairAlias: jwt
+  keyPairSecret: 123456
+  keyPairStoreSecret: 123456
